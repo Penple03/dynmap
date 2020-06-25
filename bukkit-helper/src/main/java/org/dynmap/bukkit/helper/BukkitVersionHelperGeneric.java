@@ -58,6 +58,9 @@ public abstract class BukkitVersionHelperGeneric extends BukkitVersionHelper {
     protected Method biomebasehumifunc;
     protected Field biomebaseidstring;
     protected Field biomebaseid;
+    protected Class<?> nmsbiomefog;
+    protected Field biomefog;
+    protected Field biomebasewatercolor;
     /** n.m.s.World */
     protected Class<?> nmsworld;
     protected Class<?> chunkprovserver;

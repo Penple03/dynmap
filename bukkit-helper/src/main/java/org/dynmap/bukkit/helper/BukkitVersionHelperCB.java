@@ -23,6 +23,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
     private Class<?> nmsblock;
     private Class<?> nmsblockarray;
     private Class<?> nmsmaterial;
+    private Class<?> nmsblockbase;
     private Class<?> longset;
     private Field blockbyid;
     private Field material;
@@ -80,7 +81,8 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
                 blockbyidfunc = getMethod(nmsblock, new String[] { "getById", "e" }, new Class[] { int.class });
             }
         }
-        material = getPrivateField(nmsblock, new String[] { "material" }, nmsmaterial);
+        nmsblockbase = getNMSClass("net.minecraft.server.BlockBase");
+        material = getPrivateField(nmsblockbase, new String[] { "material" }, nmsmaterial);
         getbycombinedid = getMethod(nmsblock, new String[] { "getByCombinedId" }, new Class[] { int.class });
         // Get material methods
         material_issolid = getMethod(nmsmaterial, new String[] { "isSolid" }, nulltypes);
@@ -110,7 +112,10 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         else {
             biomebasehumifunc = getMethod(biomebase, new String[] { "getHumidity" }, nulltypes);
         }
-        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS", "aR", "f" }, String.class);
+        nmsbiomefog = getNMSClass("net.minecraft.server.BiomeFog");
+        biomefog = getPrivateFieldNoFail(biomebase, new String[] { "p" }, nmsbiomefog);
+        biomebasewatercolor = getPrivateFieldNoFail(nmsbiomefog, new String[] { "c" }, int.class);
+        biomebaseidstring = getPrivateField(biomebase, new String[] { "y", "af", "ah", "z", "aS", "aR", "f", "g" }, String.class);
         biomebaseid = getFieldNoFail(biomebase, new String[] { "id" }, int.class);
         if (biomebaseid == null) {
             getidbybiome = getMethod(biomebase, new String[] { "a" }, new Class[] { biomebase } );
@@ -118,7 +123,7 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /* n.m.s.World */
         nmsworld = getNMSClass("net.minecraft.server.WorldServer");
         chunkprovserver = getNMSClass("net.minecraft.server.ChunkProviderServer");
-        nmsw_chunkproviderserver = getPrivateFieldNoFail(nmsworld, new String[] { "chunkProviderServer" }, chunkprovserver);
+        nmsw_chunkproviderserver = getPrivateFieldNoFail(nmsworld, new String[] { "chunkProviderServer", "chunkProvider" }, chunkprovserver);
         if (nmsw_chunkproviderserver == null) {
             Class<?> nmsworldbase = getNMSClass("net.minecraft.server.World");
             Class<?> nmsichunkprovider = getNMSClass("net.minecraft.server.IChunkProvider");
@@ -165,17 +170,24 @@ public class BukkitVersionHelperCB extends BukkitVersionHelperGeneric {
         /** n.m.s.WorldBorder */
         nmsworldborder = getNMSClassNoFail("net.minecraft.server.WorldBorder");
         if (nmsworldborder != null) {
-            worldbordermaxz = getMethodNoFail(nmsworldborder, new String[] { "f" }, nulltypes);
+            worldbordermaxz = getMethodNoFail(nmsworldborder, new String[] { "h" }, nulltypes);
             if (worldbordermaxz == null) {
-            	worldborderminx = getMethod(nmsworldborder, new String[] { "b" }, nulltypes);
-            	worldborderminz = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
-            	worldbordermaxx = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
-            	worldbordermaxz = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
-            }
-            else {
-            	worldborderminx = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
-            	worldborderminz = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
-            	worldbordermaxx = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+                worldbordermaxz = getMethodNoFail(nmsworldborder, new String[] { "f" }, nulltypes);
+                if (worldbordermaxz == null) {
+                    worldborderminx = getMethod(nmsworldborder, new String[] { "b" }, nulltypes);
+                    worldborderminz = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+                    worldbordermaxx = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+                    worldbordermaxz = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+                }
+                else {
+                    worldborderminx = getMethod(nmsworldborder, new String[] { "c" }, nulltypes);
+                    worldborderminz = getMethod(nmsworldborder, new String[] { "d" }, nulltypes);
+                    worldbordermaxx = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+                }
+            } else {
+                worldborderminx = getMethod(nmsworldborder, new String[] { "e" }, nulltypes);
+                worldborderminz = getMethod(nmsworldborder, new String[] { "f" }, nulltypes);
+                worldbordermaxx = getMethod(nmsworldborder, new String[] { "g" }, nulltypes);
             }
         }
         
